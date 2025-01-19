@@ -24,3 +24,50 @@ export const findByEmail = async (email: string): Promise<User | null> => {
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
 }
+
+export const findManyWithOrder = async (): Promise<User[]> => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    return users || []
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}
+
+interface UserWithFollowers extends User {
+  followersCount: number
+}
+
+export const findByIdWithFollowers = async (userId: string): Promise<UserWithFollowers | null> => {
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    })
+
+    if (!existingUser) {
+      return null
+    }
+
+    const followersCount = await prisma.user.count({
+      where: {
+        followingIds: {
+          has: userId,
+        },
+      },
+    })
+
+    return {
+      ...existingUser,
+      followersCount,
+    }
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}

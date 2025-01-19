@@ -6,7 +6,8 @@ const router = Router()
 
 // Public routes
 router.post('/register', validateUser, UserController.createUser)
-router.get('/', UserController.getAllUsers)
+router.get('/', UserController.getUsers)
+router.get('/:userId', UserController.getUserById)
 
 // // Protected routes - 暫時註解
 // router.use(authenticate)
