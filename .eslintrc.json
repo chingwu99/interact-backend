@@ -1,0 +1,57 @@
+{
+  "root": true,
+  "env": {
+    "es2021": true,
+    "node": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": ["eslint:recommended", "prettier", "plugin:import/warnings"],
+  "ignorePatterns": [],
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "semi": ["error", "never"],
+    "max-len": [
+      "error",
+      {
+        "code": 120,
+        "ignoreUrls": true
+      }
+    ],
+    "spaced-comment": [2, "always"],
+    "import/named": "error",
+    "import/newline-after-import": [
+      "error",
+      {
+        "count": 1
+      }
+    ],
+    "import/no-unresolved": "error",
+    "import/no-duplicates": "error",
+    "import/no-cycle": [2, { "ignoreExternal": false, "maxDepth": 2 }],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": ["state", "res", "ctx"]
+      }
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "no-unused-vars": ["error", { "args": "after-used" }],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-else-return": "error"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {},
+      "alias": {
+        "map": [["@", "./src"]],
+        "extensions": [".ts", ".js", ".json"]
+      }
+    }
+  }
+}
