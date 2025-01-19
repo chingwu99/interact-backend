@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
@@ -38,13 +38,14 @@
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.11",
     "nodemon": "^3.1.9",
     "prettier": "^3.3.3",
     "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
-    "typescript": "5.6.3",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.2.11"
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "5.6.3"
   },
   "engines": {
     "node": ">=22.12.0"

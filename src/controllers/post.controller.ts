@@ -10,11 +10,22 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-export const createPost = async (req: Request, res: Response): Promise<void> => {
+// export const createPost = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const post = await PostService.createPost(req.body)
+//     res.status(201).json(post)
+//   } catch (error) {
+//     res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' })
+//   }
+// }
+
+export const getPostById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const post = await PostService.createPost(req.body)
-    res.status(201).json(post)
+    const post = await PostService.getPostById({ postId: req.params.postId })
+    res.status(200).json(post)
   } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' })
+    res
+      .status(error instanceof Error && error.message === 'Post not found' ? 404 : 500)
+      .json({ error: error instanceof Error ? error.message : 'Unknown error' })
   }
 }

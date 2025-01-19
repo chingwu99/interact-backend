@@ -1,5 +1,5 @@
 import { Post } from '@prisma/client'
-import prisma from '../libs/prismadb'
+import prisma from '@/libs/prismadb'
 
 export const findMany = async (userId?: string): Promise<Post[]> => {
   try {
@@ -33,6 +33,31 @@ export const create = async (postData: Omit<Post, 'id' | 'createdAt' | 'updateAt
         comments: true,
       },
     })
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}
+
+export const findById = async (postId: string) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: {
+        user: true,
+        comments: {
+          include: {
+            user: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    })
+
+    return post
   } catch (error) {
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
