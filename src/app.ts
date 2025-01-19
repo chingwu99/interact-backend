@@ -4,6 +4,7 @@ import compression from 'compression'
 import cors from 'cors'
 import { apiRouter } from './routes/index'
 import { errorMiddleware } from './middleware/error.middleware'
+import passport from './config/passport'
 
 const app = express()
 
@@ -18,6 +19,8 @@ app.use(
 app.use(compression())
 app.use(cookieParser())
 app.use(express.json())
+
+app.use(passport.initialize())
 
 app.use(apiRouter)
 
