@@ -29,10 +29,20 @@ export const getPostById = async (params: GetPostByIdParams) => {
   }
 }
 
-// export const createPost = async (postData: Omit<Post, 'id' | 'createdAt' | 'updateAt'>): Promise<Post> => {
-//   try {
-//     return await PostRepository.create(postData)
-//   } catch (error) {
-//     throw new Error(`Failed to create post: ${error instanceof Error ? error.message : 'Unknown error'}`)
-//   }
-// }
+interface CreatePostParams {
+  body: string
+  userId: string
+}
+
+export const createPost = async (params: CreatePostParams): Promise<Post> => {
+  try {
+    const post = await PostRepository.create({
+      body: params.body,
+      userId: params.userId,
+    })
+
+    return post
+  } catch (error) {
+    throw new Error(`Failed to create post: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}

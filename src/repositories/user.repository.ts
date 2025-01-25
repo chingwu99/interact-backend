@@ -71,3 +71,29 @@ export const findByIdWithFollowers = async (userId: string): Promise<UserWithFol
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
 }
+
+export const findNotificationsAndUpdate = async (userId: string) => {
+  try {
+    const notifications = await prisma.notification.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        hasNotification: false,
+      },
+    })
+
+    return notifications
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}

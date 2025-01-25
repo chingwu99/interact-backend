@@ -24,14 +24,15 @@ export const findMany = async (userId?: string): Promise<Post[]> => {
   }
 }
 
-export const create = async (postData: Omit<Post, 'id' | 'createdAt' | 'updateAt'>): Promise<Post> => {
+interface CreatePostData {
+  body: string
+  userId: string
+}
+
+export const create = async (data: CreatePostData): Promise<Post> => {
   try {
     return await prisma.post.create({
-      data: postData,
-      include: {
-        user: true,
-        comments: true,
-      },
+      data,
     })
   } catch (error) {
     throw error instanceof Error ? error : new Error('Unknown error occurred')

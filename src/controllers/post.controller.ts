@@ -10,14 +10,28 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-// export const createPost = async (req: Request, res: Response): Promise<void> => {
-//   try {
-//     const post = await PostService.createPost(req.body)
-//     res.status(201).json(post)
-//   } catch (error) {
-//     res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' })
-//   }
-// }
+export const createPost = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // 確保用戶已認證
+    if (!req.user) {
+      res.status(401).json({ error: '未授權的操作' })
+      return
+    }
+
+    const requestBody = req.body
+    const { body } = requestBody
+
+    const post = await PostService.createPost({
+      body,
+      // @ts-ignore
+      userId: req.user.id,
+    })
+
+    res.status(201).json(post)
+  } catch (error) {
+    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' })
+  }
+}
 
 export const getPostById = async (req: Request, res: Response): Promise<void> => {
   try {

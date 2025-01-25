@@ -1,13 +1,12 @@
 import { Router } from 'express'
 import * as UserController from '../controllers/user.controller'
-import { validateUser } from '../middleware/validators/user.validator'
 
 const router = Router()
 
 // Public routes
-router.post('/register', validateUser, UserController.createUser)
 router.get('/', UserController.getUsers)
 router.get('/:userId', UserController.getUserById)
+router.get('/:userId/notifications', UserController.getNotifications)
 
 // // Protected routes - 暫時註解
 // router.use(authenticate)
