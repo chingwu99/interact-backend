@@ -2,7 +2,7 @@ import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt'
 import bcrypt from 'bcrypt'
-import * as UserRepository from '../repositories/user.repository'
+import * as AuthRepository from '../repositories/auth.repository'
 
 // 本地策略配置
 passport.use(
@@ -13,7 +13,7 @@ passport.use(
     },
     async (email, password, done) => {
       try {
-        const user = await UserRepository.findByEmail(email)
+        const user = await AuthRepository.findByEmail(email)
 
         if (!user) {
           return done(null, false, { message: '找不到使用者' })
@@ -45,7 +45,7 @@ passport.use(
     },
     async (jwtPayload, done) => {
       try {
-        const user = await UserRepository.findByEmail(jwtPayload.email)
+        const user = await AuthRepository.findByEmail(jwtPayload.email)
         if (user) {
           return done(null, user)
         }

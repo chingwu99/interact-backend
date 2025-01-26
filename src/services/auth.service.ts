@@ -1,14 +1,13 @@
 import { User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import * as UserRepository from '../repositories/user.repository'
+import * as AuthRepository from '../repositories/auth.repository'
 
 interface RegisterParams {
   email: string
   password: string
   name: string
   username: string // 添加必要的欄位
-  hashedPassword: string // 改用 hashedPassword 而不是 password
 }
 
 interface LoginResponse {
@@ -18,7 +17,7 @@ interface LoginResponse {
 
 export const register = async (params: RegisterParams): Promise<User> => {
   try {
-    const existingUser = await UserRepository.findByEmail(params.email)
+    const existingUser = await AuthRepository.findByEmail(params.email)
     if (existingUser) {
       throw new Error('此信箱已被註冊')
     }
@@ -26,7 +25,7 @@ export const register = async (params: RegisterParams): Promise<User> => {
     const { password, ...userParams } = params
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    return await UserRepository.create({
+    return await AuthRepository.create({
       ...userParams,
       hashedPassword,
       followingIds: [],
