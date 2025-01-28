@@ -29,3 +29,29 @@ export const getNotifications = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' })
   }
 }
+
+export const updateUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // 確保用戶已認證
+    if (!req.user) {
+      res.status(401).json({ error: '未授權的操作' })
+      return
+    }
+
+    const { name, username, bio, profileImage, coverImage } = req.body
+
+    const updatedUser = await UserService.updateUser({
+      // @ts-ignore
+      userId: req.user.id,
+      name,
+      username,
+      bio,
+      profileImage,
+      coverImage,
+    })
+
+    res.status(200).json(updatedUser)
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Unknown error' })
+  }
+}

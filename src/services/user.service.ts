@@ -37,3 +37,26 @@ export const getNotifications = async (params: GetNotificationsParams) => {
     throw new Error(`Failed to fetch notifications: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
+
+interface UpdateUserParams {
+  userId: string
+  name: string
+  username: string
+  bio?: string | null
+  profileImage?: string | null
+  coverImage?: string | null
+}
+
+export const updateUser = async (params: UpdateUserParams): Promise<User> => {
+  try {
+    const { userId, ...updateData } = params
+
+    if (!updateData.name || !updateData.username) {
+      throw new Error('姓名和使用者名稱為必填欄位')
+    }
+
+    return await UserRepository.updateById(userId, updateData)
+  } catch (error) {
+    throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}

@@ -81,3 +81,24 @@ export const findNotificationsAndUpdate = async (userId: string) => {
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
 }
+
+interface UpdateUserData {
+  name: string
+  username: string
+  bio?: string | null
+  profileImage?: string | null
+  coverImage?: string | null
+}
+
+export const updateById = async (userId: string, data: UpdateUserData): Promise<User> => {
+  try {
+    return await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data,
+    })
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}
