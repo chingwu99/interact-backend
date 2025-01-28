@@ -8,6 +8,6 @@ const router = Router()
 // 基本的貼文操作
 router.get('/', PostController.getPosts)
 router.get('/:postId', PostController.getPostById)
-router.post('/', authenticate, validatePost, PostController.createPost)
+router.post('/create', authenticate, validatePost, PostController.createPost)
 
 export { router as postRouter }
