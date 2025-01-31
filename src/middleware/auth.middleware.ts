@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from 'express'
+import passport from 'passport'
 import { HttpException } from './error.middleware'
 
-export const authenticate = (req: Request, _res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization
+export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('jwt', { session: false }, (err: any, user: any) => {
+    if (err) {
+      return next(new HttpException(401, '認證過程發生錯誤'))
+    }
 
-  if (!authHeader) {
-    throw new HttpException(401, '未提供認證令牌')
-  }
-
-  try {
-    // 這裡實作你的認證邏輯
-    // 例如: JWT 驗證
+    if (!user) {
+      return next(new HttpException(401, '未授權的訪問'))
+    }
+    // eslint-disable-next-line no-param-reassign
+    req.user = user
     next()
-  } catch (error) {
-    next(new HttpException(401, '無效的認證令牌'))
-  }
+  })(req, res, next)
 }
