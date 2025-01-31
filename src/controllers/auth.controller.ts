@@ -33,3 +33,19 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
   )(req, res)
 }
+
+export const googleCallback = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Google 驗證失敗' })
+      return
+    }
+
+    const response = AuthService.formatUserResponse(req.user as User)
+
+    // 重定向到前端頁面，並帶上 token
+    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${response.token}`)
+  } catch (error) {
+    res.redirect(`${process.env.FRONTEND_URL}/auth/error`)
+  }
+}
