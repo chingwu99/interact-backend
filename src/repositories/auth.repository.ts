@@ -16,3 +16,11 @@ export const findByEmail = async (email: string): Promise<User | null> => {
     throw error instanceof Error ? error : new Error('Unknown error occurred')
   }
 }
+
+export const findById = async (id: string): Promise<User | null> => {
+  try {
+    return await prisma.user.findUnique({ where: { id } })
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Unknown error occurred')
+  }
+}

@@ -46,7 +46,7 @@ passport.use(
     },
     async (jwtPayload, done) => {
       try {
-        const user = await AuthRepository.findByEmail(jwtPayload.email)
+        const user = await AuthRepository.findById(jwtPayload.id)
         if (user) {
           return done(null, user)
         }
