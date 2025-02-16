@@ -4,13 +4,14 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
+    "dev": "NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "NODE_ENV=production node dist/server.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prepare": "husky",
-    "lint-staged": "lint-staged --verbose"
+    "lint-staged": "lint-staged --verbose",
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -22,6 +23,7 @@
     "dotenv": "^16.4.4",
     "express": "^4.18.2",
     "fp-ts": "^2.16.9",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "passport": "^0.7.0",
@@ -36,6 +38,7 @@
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/helmet": "^0.0.48",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/lodash": "^4.14.202",
     "@types/node": "^22.10.7",

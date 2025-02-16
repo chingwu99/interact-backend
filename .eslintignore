@@ -10,3 +10,6 @@ vconsole.min.js
 
 # test file
 **/*.test.js
+
+# types
+types/response.type.ts

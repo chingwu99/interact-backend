@@ -8,6 +8,8 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       return
     }
 
+    console.log('req.user', req.user)
+
     const currentUser = await CurrentService.getCurrentUser({
       // @ts-ignore
       userId: req.user.id,
