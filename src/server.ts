@@ -7,8 +7,16 @@ dotenv.config()
 const port = process.env.PORT || 3000
 const server = http.createServer(app)
 
+// 根據環境設定網域
+const isDevelopment = process.env.NODE_ENV === 'development'
+const domain = isDevelopment ? process.env.DEV_DOMAIN : process.env.PROD_DOMAIN
+
 server.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+  if (isDevelopment) {
+    console.log(`Server is running on ${domain}:${port}`)
+  } else {
+    console.log(`Production server is running`)
+  }
 })
 
 // 處理未捕獲的錯誤

@@ -11,14 +11,14 @@ export const findById = async (userId: string): Promise<User | null> => {
   }
 }
 
-export const addFollower = async (userId: string, followerId: string): Promise<User> => {
+export const addFollower = async (targetUserId: string, followerId: string): Promise<User> => {
   try {
-    const user = await findById(followerId)
-    if (!user) {
-      throw new Error('使用者不存在')
+    const follower = await findById(followerId)
+    if (!follower) {
+      throw new Error('追蹤者不存在')
     }
 
-    const updatedFollowingIds = [...(user.followingIds || []), userId]
+    const updatedFollowingIds = [...(follower.followingIds || []), targetUserId]
 
     return await prisma.user.update({
       where: { id: followerId },
@@ -29,14 +29,14 @@ export const addFollower = async (userId: string, followerId: string): Promise<U
   }
 }
 
-export const removeFollower = async (userId: string, followerId: string): Promise<User> => {
+export const removeFollower = async (targetUserId: string, followerId: string): Promise<User> => {
   try {
-    const user = await findById(followerId)
-    if (!user) {
-      throw new Error('使用者不存在')
+    const follower = await findById(followerId)
+    if (!follower) {
+      throw new Error('追蹤者不存在')
     }
 
-    const updatedFollowingIds = (user.followingIds || []).filter((id) => id !== userId)
+    const updatedFollowingIds = (follower.followingIds || []).filter((id) => id !== targetUserId)
 
     return await prisma.user.update({
       where: { id: followerId },

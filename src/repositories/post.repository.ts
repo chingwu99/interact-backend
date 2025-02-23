@@ -16,8 +16,6 @@ export const findMany = async (userId?: string): Promise<Post[]> => {
       },
     })
 
-    console.log(posts)
-
     return posts
   } catch (error) {
     throw error instanceof Error ? error : new Error('Unknown error occurred')
