@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as UserService from '../services/user.service'
+import { RequestUser } from '../types/request.type'
 
 export const getUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
@@ -41,8 +42,7 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
     const { name, username, bio, profileImage, coverImage } = req.body
 
     const updatedUser = await UserService.updateUser({
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
       name,
       username,
       bio,

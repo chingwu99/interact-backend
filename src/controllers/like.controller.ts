@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as LikeService from '../services/like.service'
+import { RequestUser } from '../types/request.type'
 
 export const likePost = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,8 +12,7 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
     const { postId } = req.body
     const post = await LikeService.likePost({
       postId,
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
     })
 
     res.status(200).json(post)
@@ -31,8 +31,7 @@ export const unlikePost = async (req: Request, res: Response): Promise<void> => 
     const { postId } = req.body
     const post = await LikeService.unlikePost({
       postId,
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
     })
 
     res.status(200).json(post)

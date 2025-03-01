@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as FollowService from '../services/follow.service'
+import { RequestUser } from '../types/request.type'
 
 export const followUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,8 +12,7 @@ export const followUser = async (req: Request, res: Response): Promise<void> => 
     const { userId } = req.body
     const user = await FollowService.followUser({
       userId,
-      // @ts-ignore
-      followerId: req.user.id,
+      followerId: (req.user as RequestUser).id,
     })
 
     res.status(200).json(user)
@@ -38,8 +38,7 @@ export const unfollowUser = async (req: Request, res: Response): Promise<void> =
     const { userId } = req.body
     const user = await FollowService.unfollowUser({
       userId,
-      // @ts-ignore
-      followerId: req.user.id,
+      followerId: (req.user as RequestUser).id,
     })
 
     res.status(200).json(user)

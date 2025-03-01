@@ -12,4 +12,8 @@ vconsole.min.js
 **/*.test.js
 
 # types
-types/response.type.ts
+src/types/*
+
+# env
+.env.development
+.env.production

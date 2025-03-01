@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as CurrentService from '../services/current.service'
+import { RequestUser } from '../types/request.type'
 
 export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -9,8 +10,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
     }
 
     const currentUser = await CurrentService.getCurrentUser({
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
     })
 
     res.status(200).json(currentUser)
