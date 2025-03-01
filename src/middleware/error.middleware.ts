@@ -13,7 +13,7 @@ export class HttpException extends Error {
 // eslint-disable-next-line
 export const errorMiddleware = (error: HttpException, _req: Request, res: Response, _next: NextFunction) => {
   const status = error.status || 500
-  const message = error.message || '發生了一些錯誤'
+  const message = error.message || 'Something went wrong'
 
   res.status(status).json({
     status,

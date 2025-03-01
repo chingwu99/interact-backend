@@ -4,7 +4,7 @@ import * as LikeService from '../services/like.service'
 export const likePost = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ error: '未授權的操作' })
+      res.status(401).json({ error: 'Unauthorized operation' })
       return
     }
 
@@ -24,7 +24,7 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
 export const unlikePost = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ error: '未授權的操作' })
+      res.status(401).json({ error: 'Unauthorized operation' })
       return
     }
 

@@ -15,7 +15,7 @@ export const addFollower = async (targetUserId: string, followerId: string): Pro
   try {
     const follower = await findById(followerId)
     if (!follower) {
-      throw new Error('追蹤者不存在')
+      throw new Error('Follower not found')
     }
 
     const updatedFollowingIds = [...(follower.followingIds || []), targetUserId]
@@ -33,7 +33,7 @@ export const removeFollower = async (targetUserId: string, followerId: string): 
   try {
     const follower = await findById(followerId)
     if (!follower) {
-      throw new Error('追蹤者不存在')
+      throw new Error('Follower not found')
     }
 
     const updatedFollowingIds = (follower.followingIds || []).filter((id) => id !== targetUserId)

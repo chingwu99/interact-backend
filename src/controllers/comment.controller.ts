@@ -4,7 +4,7 @@ import * as CommentService from '../services/comment.service'
 export const createComment = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ error: '未授權的操作' })
+      res.status(401).json({ error: 'Unauthorized operation' })
       return
     }
 

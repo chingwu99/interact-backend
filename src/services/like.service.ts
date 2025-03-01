@@ -10,7 +10,7 @@ export const likePost = async (params: LikePostParams): Promise<Post> => {
   try {
     const post = await LikeRepository.findPostById(params.postId)
     if (!post) {
-      throw new Error('貼文不存在')
+      throw new Error('Post not found')
     }
 
     const updatedPost = await LikeRepository.addLike(params.postId, params.userId)
@@ -31,7 +31,7 @@ export const unlikePost = async (params: LikePostParams): Promise<Post> => {
   try {
     const post = await LikeRepository.findPostById(params.postId)
     if (!post) {
-      throw new Error('貼文不存在')
+      throw new Error('Post not found')
     }
 
     return await LikeRepository.removeLike(params.postId, params.userId)

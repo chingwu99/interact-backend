@@ -6,7 +6,7 @@ interface RegisterParams {
   email: string
   password: string
   name: string
-  username: string // 添加必要的欄位
+  username: string
 }
 
 interface LoginResponse {
@@ -17,7 +17,7 @@ export const register = async (params: RegisterParams): Promise<User> => {
   try {
     const existingUser = await AuthRepository.findByEmail(params.email)
     if (existingUser) {
-      throw new Error('此信箱已被註冊')
+      throw new Error('Email already registered')
     }
 
     const { password, ...userParams } = params
@@ -35,7 +35,7 @@ export const register = async (params: RegisterParams): Promise<User> => {
       profileImage: null,
     })
   } catch (error) {
-    throw new Error(`註冊失敗: ${error instanceof Error ? error.message : '未知錯誤'}`)
+    throw new Error(`Registration failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 

@@ -1,19 +1,15 @@
-import app from './app'
-import dotenv from 'dotenv'
 import http from 'http'
+import { isProduction } from './env'
+import app from './app'
 
-dotenv.config()
-
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 8080
 const server = http.createServer(app)
 
 // 根據環境設定網域
-const isDevelopment = process.env.NODE_ENV === 'development'
-const domain = isDevelopment ? process.env.DEV_DOMAIN : process.env.PROD_DOMAIN
 
 server.listen(port, () => {
-  if (isDevelopment) {
-    console.log(`Server is running on ${domain}:${port}`)
+  if (!isProduction) {
+    console.log(`Server is running on ${process.env.DOMAIN}:${port}`)
   } else {
     console.log(`Production server is running`)
   }
@@ -27,21 +23,21 @@ process.on('uncaughtException', (error: Error) => {
 
 // 處理未處理的 Promise 拒絕
 process.on('unhandledRejection', (reason: any) => {
-  console.error('未處理的 Promise 拒絕:', reason)
+  console.error('Unhandled Promise Rejection:', reason)
   process.exit(1)
 })
 
 // 優雅關閉
 const shutdown = () => {
-  console.log('正在關閉伺服器...')
+  console.log('Shutting down server...')
   server.close(() => {
-    console.log('伺服器已關閉')
+    console.log('Server closed')
     process.exit(0)
   })
 
   // 如果 10 秒內無法正常關閉，則強制關閉
   setTimeout(() => {
-    console.error('無法正常關閉伺服器，強制關閉')
+    console.error('Could not gracefully shut down the server, forcing shutdown')
     process.exit(1)
   }, 10000)
 }

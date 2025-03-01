@@ -15,7 +15,7 @@ export const addLike = async (postId: string, userId: string): Promise<Post> => 
   try {
     const post = await findPostById(postId)
     if (!post) {
-      throw new Error('貼文不存在')
+      throw new Error('Post not found')
     }
 
     const updatedLikedIds = [...(post.likedIds || []), userId]
@@ -33,7 +33,7 @@ export const removeLike = async (postId: string, userId: string): Promise<Post> 
   try {
     const post = await findPostById(postId)
     if (!post) {
-      throw new Error('貼文不存在')
+      throw new Error('Post not found')
     }
 
     const updatedLikedIds = (post.likedIds || []).filter((id) => id !== userId)

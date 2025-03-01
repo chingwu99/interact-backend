@@ -8,7 +8,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
 
   // 如果完全沒有 token
   if (!accessToken && !refreshToken) {
-    throw new HttpException(401, '請重新登入')
+    throw new HttpException(401, 'Please login again')
   }
 
   // 如果有 access token，先驗證
@@ -19,7 +19,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
       req.user = decoded
       return next()
     } catch (error) {
-      // access token 無效，繼續檢查 refresh token
+      throw new HttpException(401, 'Please login again')
     }
   }
 
@@ -44,10 +44,10 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
       return next()
     } catch (error) {
       // refresh token 也無效
-      throw new HttpException(401, 'Token 無效或已過期，請重新登入')
+      throw new HttpException(401, 'Please login again')
     }
   }
 
   // 如果都沒有有效的 token
-  throw new HttpException(401, '請重新登入')
+  throw new HttpException(401, 'Please login again')
 }

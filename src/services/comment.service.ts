@@ -11,7 +11,7 @@ export const createComment = async (params: CreateCommentParams): Promise<Commen
   try {
     const post = await CommentRepository.findPostById(params.postId)
     if (!post) {
-      throw new Error('貼文不存在')
+      throw new Error('Post not found')
     }
 
     const comment = await CommentRepository.create(params)
