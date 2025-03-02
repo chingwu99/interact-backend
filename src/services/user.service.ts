@@ -1,34 +1,62 @@
 import * as UserRepository from '../repositories/user.repository'
 import { User } from '@prisma/client'
 
-const validateEmail = (email: string): void => {
-  if (!email.includes('@')) {
-    throw new Error('無效的電子郵件')
-  }
-}
-
-export const createUser = async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> => {
+export const getUsers = async (): Promise<User[]> => {
   try {
-    // 1. 驗證電子郵件
-    validateEmail(userData.email)
-
-    // 2. 檢查用戶是否已存在
-    const existingUser = await UserRepository.findByEmail(userData.email)
-    if (existingUser) {
-      throw new Error('用戶已存在')
-    }
-
-    // 3. 創建用戶
-    return await UserRepository.create(userData)
-  } catch (error) {
-    throw error instanceof Error ? error : new Error('Unknown error occurred')
-  }
-}
-
-export const getAllUsers = async (): Promise<User[]> => {
-  try {
-    return await UserRepository.findAll()
+    return await UserRepository.findManyWithOrder()
   } catch (error) {
     throw new Error(`Failed to fetch users: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
+
+interface GetUserByIdParams {
+  userId: string
+}
+
+export const getUserById = async (params: GetUserByIdParams) => {
+  try {
+    const user = await UserRepository.findByIdWithFollowers(params.userId)
+    if (!user) {
+      throw new Error('User not found')
+    }
+    return user
+  } catch (error) {
+    throw new Error(`Failed to fetch user: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
+
+interface GetNotificationsParams {
+  userId: string
+}
+
+export const getNotifications = async (params: GetNotificationsParams) => {
+  try {
+    const notifications = await UserRepository.findNotificationsAndUpdate(params.userId)
+    return notifications
+  } catch (error) {
+    throw new Error(`Failed to fetch notifications: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
+}
+
+interface UpdateUserParams {
+  userId: string
+  name: string
+  username: string
+  bio?: string | null
+  profileImage?: string | null
+  coverImage?: string | null
+}
+
+export const updateUser = async (params: UpdateUserParams): Promise<User> => {
+  try {
+    const { userId, ...updateData } = params
+
+    if (!updateData.name || !updateData.username) {
+      throw new Error('Name and username are required fields')
+    }
+
+    return await UserRepository.updateById(userId, updateData)
+  } catch (error) {
+    throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

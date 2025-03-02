@@ -10,3 +10,10 @@ vconsole.min.js
 
 # test file
 **/*.test.js
+
+# types
+src/types/*
+
+# env
+.env.development
+.env.production
