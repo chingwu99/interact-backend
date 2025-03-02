@@ -1,10 +1,11 @@
 import { Request, Response } from 'express'
 import * as CommentService from '../services/comment.service'
+import { RequestUser } from '../types/request.type'
 
 export const createComment = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
-      res.status(401).json({ error: '未授權的操作' })
+      res.status(401).json({ error: 'Unauthorized operation' })
       return
     }
 
@@ -14,8 +15,7 @@ export const createComment = async (req: Request, res: Response): Promise<void> 
     const comment = await CommentService.createComment({
       body,
       postId,
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
     })
 
     res.status(201).json(comment)

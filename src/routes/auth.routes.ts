@@ -9,9 +9,4 @@ router.post('/register', validateUser, AuthController.register)
 router.post('/login', AuthController.login)
 router.post('/logout', AuthController.logout)
 
-// Google OAuth 路由
-// router.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }))
-
-// router.get('/google/callback', passport.authenticate('google', { session: false }), AuthController.googleCallback)
-
 export { router as authRouter }

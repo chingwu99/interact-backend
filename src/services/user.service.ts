@@ -17,7 +17,7 @@ export const getUserById = async (params: GetUserByIdParams) => {
   try {
     const user = await UserRepository.findByIdWithFollowers(params.userId)
     if (!user) {
-      throw new Error('使用者不存在')
+      throw new Error('User not found')
     }
     return user
   } catch (error) {
@@ -52,7 +52,7 @@ export const updateUser = async (params: UpdateUserParams): Promise<User> => {
     const { userId, ...updateData } = params
 
     if (!updateData.name || !updateData.username) {
-      throw new Error('姓名和使用者名稱為必填欄位')
+      throw new Error('Name and username are required fields')
     }
 
     return await UserRepository.updateById(userId, updateData)

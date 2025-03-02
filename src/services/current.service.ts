@@ -8,7 +8,7 @@ export const getCurrentUser = async (params: GetCurrentUserParams) => {
   try {
     const currentUser = await CurrentRepository.findById(params.userId)
     if (!currentUser) {
-      throw new Error('使用者不存在')
+      throw new Error('User not found')
     }
     return currentUser
   } catch (error) {

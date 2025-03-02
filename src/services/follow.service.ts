@@ -10,7 +10,7 @@ export const followUser = async (params: FollowUserParams): Promise<User> => {
   try {
     const user = await FollowRepository.findById(params.userId)
     if (!user) {
-      throw new Error('使用者不存在')
+      throw new Error('User not found')
     }
 
     const updatedUser = await FollowRepository.addFollower(params.userId, params.followerId)
@@ -31,7 +31,7 @@ export const unfollowUser = async (params: FollowUserParams): Promise<User> => {
   try {
     const user = await FollowRepository.findById(params.userId)
     if (!user) {
-      throw new Error('使用者不存在')
+      throw new Error('User not found')
     }
 
     return await FollowRepository.removeFollower(params.userId, params.followerId)

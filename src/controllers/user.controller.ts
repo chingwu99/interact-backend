@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import * as UserService from '../services/user.service'
+import { RequestUser } from '../types/request.type'
 
 export const getUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
@@ -16,7 +17,7 @@ export const getUserById = async (req: Request, res: Response): Promise<void> =>
     res.status(200).json(user)
   } catch (error) {
     res
-      .status(error instanceof Error && error.message === '使用者不存在' ? 404 : 500)
+      .status(error instanceof Error && error.message === 'User not found' ? 404 : 500)
       .json({ error: error instanceof Error ? error.message : 'Unknown error' })
   }
 }
@@ -34,15 +35,14 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   try {
     // 確保用戶已認證
     if (!req.user) {
-      res.status(401).json({ error: '未授權的操作' })
+      res.status(401).json({ error: 'Unauthorized operation' })
       return
     }
 
     const { name, username, bio, profileImage, coverImage } = req.body
 
     const updatedUser = await UserService.updateUser({
-      // @ts-ignore
-      userId: req.user.id,
+      userId: (req.user as RequestUser).id,
       name,
       username,
       bio,
