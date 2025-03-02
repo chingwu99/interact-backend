@@ -21,6 +21,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# 安裝必要的系統依賴
+RUN apk add --no-cache openssl
+
 # 只複製必要的文件
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package*.json ./
