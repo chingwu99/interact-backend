@@ -1,14 +1,17 @@
 # 構建階段
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 # 設置工作目錄
 WORKDIR /app
+
+# 安裝必要的系統依賴
+RUN apk add --no-cache openssl
 
 # 複製 package.json 和 package-lock.json
 COPY package*.json ./
 
 # 只安裝生產環境必需的依賴
-RUN npm install --production=false
+RUN npm install --include=dev
 
 # 複製源代碼
 COPY . .
@@ -17,7 +20,7 @@ COPY . .
 RUN npx prisma generate && npm run build
 
 # 生產環境階段
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
