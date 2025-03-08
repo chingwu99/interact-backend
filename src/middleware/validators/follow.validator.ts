@@ -5,7 +5,7 @@ export const validateUserId = (req: Request, _res: Response, next: NextFunction)
   const { userId } = req.body
 
   if (!userId || typeof userId !== 'string') {
-    throw new HttpException(400, 'Invalid user ID')
+    return next(new HttpException(400, 'Invalid user ID'))
   }
 
   next()

@@ -1,6 +1,7 @@
 import http from 'http'
 import { isProduction } from './env'
 import app from './app'
+import { cleanupExpiredTokens } from './middleware/auth.middleware'
 
 const port = process.env.PORT || 8080
 const server = http.createServer(app)
@@ -13,6 +14,17 @@ server.listen(port, () => {
   } else {
     console.log(`Production server is running`)
   }
+
+  // 啟動時先清理一次過期的 refresh tokens
+  cleanupExpiredTokens().catch((err) => console.error('Failed to clean up tokens on startup:', err))
+
+  // 設置定期清理過期的 refresh tokens (每天執行一次)
+  setInterval(
+    () => {
+      cleanupExpiredTokens().catch((err) => console.error('Failed to clean up tokens:', err))
+    },
+    24 * 60 * 60 * 1000
+  ) // 24小時
 })
 
 // 處理未捕獲的錯誤
