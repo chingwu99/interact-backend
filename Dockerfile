@@ -41,5 +41,5 @@ RUN npm pkg delete scripts.prepare && \
 
 # 設置環境變數和啟動命令
 ENV NODE_ENV=production
-EXPOSE 3000
+EXPOSE 8080
 CMD ["npm", "start"]
