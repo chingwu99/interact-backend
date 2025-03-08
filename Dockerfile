@@ -10,8 +10,10 @@ RUN apk add --no-cache openssl
 # 複製 package.json 和 package-lock.json
 COPY package*.json ./
 
-# 只安裝生產環境必需的依賴
-RUN npm install --include=dev
+# 只安裝開發環境必需的依賴
+# 移除 husky prepare 腳本並安裝依賴
+RUN npm pkg delete scripts.prepare && \
+    npm install --include=dev
 
 # 複製源代碼
 COPY . .
