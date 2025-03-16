@@ -32,6 +32,7 @@ model User{
   posts Post[]
   comments Comment[]
   notifications Notification[]
+  refreshTokens RefreshToken[]
 }
 
 model Post {
@@ -66,4 +67,16 @@ model Notification{
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId],references: [id],onDelete:Cascade)
+}
+
+model RefreshToken {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  token String @unique
+  userId String @db.ObjectId
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isRevoked Boolean @default(false)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

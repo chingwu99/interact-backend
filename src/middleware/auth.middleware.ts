@@ -1,53 +1,33 @@
 import { Request, Response, NextFunction } from 'express'
 import { HttpException } from './error.middleware'
 import jwt from 'jsonwebtoken'
+import * as AuthService from '../services/auth.service'
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   const accessToken = req.cookies.accessToken
-  const refreshToken = req.cookies.refreshToken
 
-  // 如果完全沒有 token
-  if (!accessToken && !refreshToken) {
-    throw new HttpException(401, 'Please login again')
+  // 如果沒有 access token
+  if (!accessToken) {
+    return next(new HttpException(401, 'Access token not provided'))
   }
 
-  // 如果有 access token，先驗證
-  if (accessToken) {
-    try {
-      const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET!) as { id: string }
-      // eslint-disable-next-line no-param-reassign
-      req.user = decoded
-      return next()
-    } catch (error) {
-      throw new HttpException(401, 'Please login again')
-    }
+  // 驗證 access token
+  try {
+    const decoded = jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET!) as { id: string }
+    // eslint-disable-next-line no-param-reassign
+    req.user = decoded
+    return next()
+  } catch (error) {
+    return next(new HttpException(401, 'Invalid or expired access token'))
   }
+}
 
-  // 驗證 refresh token
-  if (refreshToken) {
-    try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as { id: string }
-
-      // 生成新的 access token
-      const newAccessToken = jwt.sign({ id: decoded.id }, process.env.JWT_ACCESS_SECRET!, { expiresIn: '15m' })
-
-      // 設置新的 access token
-      res.cookie('accessToken', newAccessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000,
-      })
-
-      // eslint-disable-next-line no-param-reassign
-      req.user = decoded
-      return next()
-    } catch (error) {
-      // refresh token 也無效
-      throw new HttpException(401, 'Please login again')
-    }
+// 定期清理過期的 refresh tokens
+export const cleanupExpiredTokens = async () => {
+  try {
+    await AuthService.cleanupExpiredTokens()
+    console.log('Expired refresh tokens cleaned up')
+  } catch (error) {
+    console.error('Failed to clean up expired tokens:', error)
   }
-
-  // 如果都沒有有效的 token
-  throw new HttpException(401, 'Please login again')
 }
