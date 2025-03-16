@@ -5,8 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "dev": "NODE_ENV=development nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
-    "build": "tsc",
-    "start": "NODE_ENV=production node dist/server.js",
+    "build": "tsc && tsc-alias",
+    "start": "NODE_ENV=production node build/server.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "prepare": "husky",
@@ -60,7 +60,8 @@
     "prisma": "^5.11.0",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "tsc-alias": "^1.8.8"
   },
   "engines": {
     "node": ">=22.12.0"

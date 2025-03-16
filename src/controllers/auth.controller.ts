@@ -4,22 +4,6 @@ import * as AuthService from '../services/auth.service'
 import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 
-const generateTokens = (userId: string) => {
-  const accessToken = jwt.sign(
-    { id: userId },
-    process.env.JWT_ACCESS_SECRET!,
-    { expiresIn: '15m' } // Access Token 15m
-  )
-
-  const refreshToken = jwt.sign(
-    { id: userId },
-    process.env.JWT_REFRESH_SECRET!,
-    { expiresIn: '7d' } // Refresh Token 7days
-  )
-
-  return { accessToken, refreshToken }
-}
-
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = await AuthService.register(req.body)
@@ -36,7 +20,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   passport.authenticate(
     'local',
     { session: false },
-    (err: Error | null, user: User | false, info: { message: string } | undefined) => {
+    async (err: Error | null, user: User | false, info: { message: string } | undefined) => {
       if (err) {
         return res.status(500).json({ error: 'Login process error' })
       }
@@ -45,48 +29,154 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         return res.status(401).json({ error: info?.message || 'Login failed' })
       }
 
-      const { accessToken, refreshToken } = generateTokens(user.id)
+      try {
+        // 使用服務層生成 tokens
+        const { accessToken, refreshToken } = await AuthService.generateTokens(user.id)
 
-      // 設置 cookies
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 15 * 60 * 1000, // 15分鐘
-      })
+        // 設置 cookies
+        res.cookie('accessToken', accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 15 * 60 * 1000, // 15分鐘
+        })
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        // 移除 path 限制，讓所有 API 都能讀取到 refreshToken
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7天
-      })
+        res.cookie('refreshToken', refreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          // 移除 path 限制，讓所有 API 都能讀取到 refreshToken
+          maxAge: 3 * 24 * 60 * 60 * 1000, // 3天
+        })
 
-      const response = AuthService.formatUserResponse(user)
+        const response = AuthService.formatUserResponse(user)
 
-      res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        data: response,
-      })
+        res.status(200).json({
+          success: true,
+          message: 'Login successful',
+          data: response,
+        })
+      } catch (error) {
+        return res.status(500).json({
+          error: error instanceof Error ? error.message : 'Login process error',
+        })
+      }
     }
   )(req, res)
 }
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  res.cookie('accessToken', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  })
+  try {
+    // 從 cookie 中獲取 refresh token
+    const refreshToken = req.cookies.refreshToken
 
-  res.cookie('refreshToken', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  })
+    // 如果有 refresh token，使用服務層撤銷它
+    if (refreshToken) {
+      await AuthService.revokeRefreshToken(refreshToken)
+    }
 
-  res.status(200).json({
-    success: true,
-    message: 'Logout successful',
-  })
+    // 清除 cookies
+    res.cookie('accessToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Logout successful',
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : 'Logout failed',
+    })
+  }
+}
+
+// refresh token 端點
+export const refreshAccessToken = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const refreshToken = req.cookies.refreshToken
+
+    if (!refreshToken) {
+      console.log('Refresh token not provided')
+      res.status(401).json({ error: 'Refresh token not provided' })
+      return
+    }
+
+    // 使用服務層驗證 refresh token
+    const validationResult = await AuthService.validateRefreshToken(refreshToken)
+
+    if (!validationResult.valid) {
+      console.log(`Refresh token invalid: ${validationResult.reason}`)
+      res.status(401).json({ error: `Invalid refresh token: ${validationResult.reason}` })
+      return
+    }
+
+    // 生成新的 access token
+    const newAccessToken = jwt.sign({ id: validationResult.userId }, process.env.JWT_ACCESS_SECRET!, {
+      expiresIn: '15m',
+    })
+
+    // 設置新的 access token cookie
+    res.cookie('accessToken', newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15分鐘
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Access token refreshed successfully',
+    })
+  } catch (error) {
+    console.error('Token refresh failed:', error)
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Token refresh failed',
+    })
+  }
+}
+
+// 登出所有裝置端點
+export const logoutAllDevices = async (req: Request, res: Response): Promise<void> => {
+  try {
+    // 從 req.user 中獲取用戶 ID（需要先通過 authenticate 中間件）
+    const userId = (req.user as { id: string }).id
+
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' })
+      return
+    }
+
+    // 使用服務層撤銷所有 refresh tokens
+    await AuthService.revokeAllUserRefreshTokens(userId)
+
+    // 清除當前裝置的 cookies
+    res.cookie('accessToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+
+    res.cookie('refreshToken', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    })
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged out from all devices successfully',
+    })
+  } catch (error) {
+    console.error('Logout all devices failed:', error)
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : 'Logout from all devices failed',
+    })
+  }
 }
