@@ -37,15 +37,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.cookie('accessToken', accessToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: 'none',
           maxAge: 15 * 60 * 1000, // 15分鐘
         })
 
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          // 移除 path 限制，讓所有 API 都能讀取到 refreshToken
+          sameSite: 'none',
           maxAge: 3 * 24 * 60 * 60 * 1000, // 3天
         })
 
@@ -78,11 +77,15 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     // 清除 cookies
     res.cookie('accessToken', '', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
       expires: new Date(0),
     })
 
     res.cookie('refreshToken', '', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
       expires: new Date(0),
     })
 
@@ -127,7 +130,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     res.cookie('accessToken', newAccessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 15 * 60 * 1000, // 15分鐘
     })
 
@@ -160,11 +163,15 @@ export const logoutAllDevices = async (req: Request, res: Response): Promise<voi
     // 清除當前裝置的 cookies
     res.cookie('accessToken', '', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
       expires: new Date(0),
     })
 
     res.cookie('refreshToken', '', {
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
       expires: new Date(0),
     })
 
