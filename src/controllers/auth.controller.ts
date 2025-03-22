@@ -39,6 +39,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'none',
           maxAge: 15 * 60 * 1000, // 15分鐘
+          domain: '.up.railway.app',
         })
 
         res.cookie('refreshToken', refreshToken, {
@@ -46,6 +47,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'none',
           maxAge: 3 * 24 * 60 * 60 * 1000, // 3天
+          domain: '.up.railway.app',
         })
 
         const response = AuthService.formatUserResponse(user)
@@ -80,6 +82,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       expires: new Date(0),
+      domain: '.up.railway.app',
     })
 
     res.cookie('refreshToken', '', {
@@ -87,6 +90,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       expires: new Date(0),
+      domain: '.up.railway.app',
     })
 
     res.status(200).json({
@@ -132,6 +136,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       maxAge: 15 * 60 * 1000, // 15分鐘
+      domain: '.up.railway.app',
     })
 
     res.status(200).json({
@@ -166,6 +171,7 @@ export const logoutAllDevices = async (req: Request, res: Response): Promise<voi
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       expires: new Date(0),
+      domain: '.up.railway.app',
     })
 
     res.cookie('refreshToken', '', {
@@ -173,6 +179,7 @@ export const logoutAllDevices = async (req: Request, res: Response): Promise<voi
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'none',
       expires: new Date(0),
+      domain: '.up.railway.app',
     })
 
     res.status(200).json({
